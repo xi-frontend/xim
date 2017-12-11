@@ -13,6 +13,7 @@ log = "0.3.8"
 log4rs = "0.7.0"
 termion = "1.5.1"
 tokio-core = "0.1.10"
+xdg = "2.1.0"
 
 [dependencies.xrl]
 git = "https://github.com/little-dude/xrl"

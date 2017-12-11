@@ -6,17 +6,25 @@ use futures::sync::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 
 use termion::event::{Event, Key};
 use tokio_core::reactor::Handle;
-use xrl::{Client, ClientResult, Frontend, FrontendBuilder, ScrollTo, ServerResult, Style, Update};
+use xrl::{
+    Client, ClientResult, Frontend,
+    FrontendBuilder, ScrollTo, ServerResult,
+    Style, Update, AvailablePlugins,
+    PluginStarted, PluginStoped, UpdateCmds,
+    ConfigChanged, ThemeChanged, ViewId
+};
+
+use xdg::BaseDirectories;
 
 use errors::*;
 use terminal::{Terminal, TerminalEvent};
 use view::{View, ViewClient};
 
 pub struct Xim {
-    pub pending_open_requests: Vec<ClientResult<(String, View)>>,
+    pub pending_open_requests: Vec<ClientResult<(ViewId, View)>>,
     pub delayed_events: Vec<CoreEvent>,
-    pub views: HashMap<String, View>,
-    pub current_view: String,
+    pub views: HashMap<ViewId, View>,
+    pub current_view: Option<ViewId>,
     pub events: UnboundedReceiver<CoreEvent>,
     pub handle: Handle,
     pub client: Client,
@@ -29,12 +37,16 @@ pub struct Xim {
 impl Xim {
     pub fn new(
         handle: Handle,
-        client: Client,
+        mut client: Client,
         events: UnboundedReceiver<CoreEvent>,
     ) -> Result<Self> {
         let mut styles = HashMap::new();
         styles.insert(0, Default::default());
-
+        if let Ok(dirs) = BaseDirectories::with_prefix("xi") {
+            if let Some(conf_dir) = dirs.get_config_home().to_str() {
+                handle.spawn(client.client_started(Some(conf_dir)).map_err(|_|()));
+            }
+        }
         Ok(Xim {
             events: events,
             delayed_events: Vec::new(),
@@ -44,7 +56,7 @@ impl Xim {
             term_size: (0, 0),
             views: HashMap::new(),
             styles: styles,
-            current_view: "".into(),
+            current_view: None,
             client: client,
             shutdown: false,
         })
@@ -94,10 +106,12 @@ impl Xim {
         } = *self;
         info!("setting new terminal size");
         self.term_size = size;
-        if let Some(view) = views.get_mut(current_view) {
-            view.resize(size.1);
-        } else {
-            warn!("view {} not found", current_view);
+        if let Some(current_view) = *current_view {
+            if let Some(view) = views.get_mut(&current_view) {
+                view.resize(size.1);
+            } else {
+                warn!("view {:?} not found", current_view);
+            }
         }
     }
 
@@ -120,8 +134,12 @@ impl Xim {
     fn handle_input(&mut self, event: Event) {
         if Event::Key(Key::Ctrl('c')) == event {
             self.exit()
-        } else if let Some(view) = self.views.get_mut(&self.current_view) {
-            view.handle_input(event)
+        } else {
+            if let Some(current_view) = self.current_view {
+                if let Some(view) = self.views.get_mut(&current_view) {
+                    view.handle_input(event);
+                }
+            }
         }
     }
 
@@ -153,7 +171,7 @@ impl Xim {
                     done.push(idx);
                     view.resize(term_size.1);
                     views.insert(id.clone(), view);
-                    *current_view = id;
+                    *current_view = Some(id);
                 }
                 Ok(Async::NotReady) => continue,
                 Err(e) => panic!("\"open\" task failed: {}", e),
@@ -230,10 +248,12 @@ impl Xim {
             ref styles,
             ..
         } = *self;
-        if let Some(view) = views.get_mut(current_view) {
-            view.render(term.stdout(), styles)?;
-            if let Err(e) = term.stdout().flush() {
-                error!("failed to flush stdout: {}", e);
+        if let Some(current_view) = *current_view {
+            if let Some(view) = views.get_mut(&current_view) {
+                view.render(term.stdout(), styles)?;
+                if let Err(e) = term.stdout().flush() {
+                    error!("failed to flush stdout: {}", e);
+                }
             }
         }
         Ok(())
@@ -300,6 +320,30 @@ impl Frontend for XimService {
 
     fn def_style(&mut self, style: Style) -> ServerResult<()> {
         self.send_core_event(CoreEvent::SetStyle(style))
+    }
+    fn available_plugins(&mut self, plugins: AvailablePlugins) -> ServerResult<()> {
+        info!("Received available_plugins: {:?}",plugins);
+        Box::new(future::ok(()))
+    }
+    fn update_cmds(&mut self, cmds: UpdateCmds) -> ServerResult<()> {
+        info!("Received update_cmds: {:?}",cmds);
+        Box::new(future::ok(()))
+    }
+    fn plugin_started(&mut self, plugin: PluginStarted) -> ServerResult<()> {
+        info!("Received plugin_started: {:?}",plugin);
+        Box::new(future::ok(()))
+    }
+    fn plugin_stoped(&mut self, plugin: PluginStoped) -> ServerResult<()> {
+        info!("Received plugin_stoped: {:?}",plugin);
+        Box::new(future::ok(()))
+    }
+    fn theme_changed(&mut self, theme: ThemeChanged) -> ServerResult<()> {
+        info!("Received theme_changed: {:?}",theme);
+        Box::new(future::ok(()))
+    }
+    fn config_changed(&mut self, cfg: ConfigChanged) -> ServerResult<()> {
+        info!("Received config_changed: {:?}",cfg);
+        Box::new(future::ok(()))
     }
 }
 

@@ -12,6 +12,7 @@ extern crate futures;
 extern crate termion;
 extern crate tokio_core;
 extern crate xrl;
+extern crate xdg;
 
 mod xim;
 mod errors;
