@@ -14,9 +14,5 @@ log4rs = "0.7.0"
 termion = "1.5.1"
 tokio-core = "0.1.10"
 
-[dependencies.clippy]
-optional = true
-version = "0.0.165"
-
 [dependencies.xrl]
 git = "https://github.com/little-dude/xrl"
