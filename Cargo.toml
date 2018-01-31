@@ -1,6 +1,8 @@
 [package]
-authors = ["Corentin Henry <corentinhenry@gmail.com>"]
-name = "xi-tui"
+authors = ["Corentin Henry <corentinhenry@gmail.com>",
+           "Manoel Vilela <manoel_vilela@engineer.com>",
+           "Leonardo Neumann <leonardohn@null.net>"]
+name = "xmi"
 version = "0.1.0"
 
 [dependencies]
@@ -11,10 +13,6 @@ log = "0.3.8"
 log4rs = "0.7.0"
 termion = "1.5.1"
 tokio-core = "0.1.10"
-
-[dependencies.clippy]
-optional = true
-version = "0.0.165"
 
 [dependencies.xrl]
 git = "https://github.com/little-dude/xrl"
