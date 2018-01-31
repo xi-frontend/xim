@@ -12,7 +12,7 @@ use errors::*;
 use terminal::{Terminal, TerminalEvent};
 use view::{View, ViewClient};
 
-pub struct Tui {
+pub struct Xmi {
     pub pending_open_requests: Vec<ClientResult<(String, View)>>,
     pub delayed_events: Vec<CoreEvent>,
     pub views: HashMap<String, View>,
@@ -26,7 +26,7 @@ pub struct Tui {
     pub styles: HashMap<u64, Style>,
 }
 
-impl Tui {
+impl Xmi {
     pub fn new(
         handle: Handle,
         client: Client,
@@ -35,7 +35,7 @@ impl Tui {
         let mut styles = HashMap::new();
         styles.insert(0, Default::default());
 
-        Ok(Tui {
+        Ok(Xmi {
             events: events,
             delayed_events: Vec::new(),
             pending_open_requests: Vec::new(),
@@ -59,7 +59,7 @@ impl Tui {
     }
 
     fn handle_update(&mut self, update: Update) {
-        let Tui {
+        let Xmi {
             ref mut views,
             ref mut delayed_events,
             ..
@@ -71,7 +71,7 @@ impl Tui {
     }
 
     fn handle_scroll_to(&mut self, scroll_to: ScrollTo) {
-        let Tui {
+        let Xmi {
             ref mut views,
             ref mut delayed_events,
             ..
@@ -87,7 +87,7 @@ impl Tui {
     }
 
     fn handle_resize(&mut self, size: (u16, u16)) {
-        let Tui {
+        let Xmi {
             ref mut views,
             ref current_view,
             ..
@@ -137,7 +137,7 @@ impl Tui {
 
         info!("process pending open requests");
 
-        let Tui {
+        let Xmi {
             ref mut pending_open_requests,
             ref mut views,
             ref mut current_view,
@@ -223,7 +223,7 @@ impl Tui {
     }
 
     fn render(&mut self) -> Result<()> {
-        let Tui {
+        let Xmi {
             ref mut views,
             ref mut term,
             ref current_view,
@@ -247,7 +247,7 @@ pub enum CoreEvent {
     SetStyle(Style),
 }
 
-impl Future for Tui {
+impl Future for Xmi {
     type Item = ();
     type Error = io::Error;
 
@@ -269,9 +269,9 @@ impl Future for Tui {
     }
 }
 
-pub struct TuiService(UnboundedSender<CoreEvent>);
+pub struct XmiService(UnboundedSender<CoreEvent>);
 
-impl TuiService {
+impl XmiService {
     fn send_core_event(&mut self, event: CoreEvent) -> ServerResult<()> {
         if let Err(e) = self.0.start_send(event) {
             let e = format!("failed to send core event to TUI: {}", e);
@@ -289,7 +289,7 @@ impl TuiService {
 }
 
 
-impl Frontend for TuiService {
+impl Frontend for XmiService {
     fn update(&mut self, update: Update) -> ServerResult<()> {
         self.send_core_event(CoreEvent::Update(update))
     }
@@ -303,17 +303,17 @@ impl Frontend for TuiService {
     }
 }
 
-pub struct TuiServiceBuilder(UnboundedSender<CoreEvent>);
+pub struct XmiServiceBuilder(UnboundedSender<CoreEvent>);
 
-impl TuiServiceBuilder {
+impl XmiServiceBuilder {
     pub fn new() -> (Self, UnboundedReceiver<CoreEvent>) {
         let (tx, rx) = unbounded();
-        (TuiServiceBuilder(tx), rx)
+        (XmiServiceBuilder(tx), rx)
     }
 }
 
-impl FrontendBuilder<TuiService> for TuiServiceBuilder {
-    fn build(self, _client: Client) -> TuiService {
-        TuiService(self.0)
+impl FrontendBuilder<XmiService> for XmiServiceBuilder {
+    fn build(self, _client: Client) -> XmiService {
+        XmiService(self.0)
     }
 }

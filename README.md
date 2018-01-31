@@ -1,10 +1,12 @@
-# xi-tui
+# xi-micro
 
-[![Build Status](https://travis-ci.org/little-dude/xi-tui.svg?branch=master)](https://travis-ci.org/little-dude/xi-tui)
+[![Build Status](https://travis-ci.org/DestructHub/xi-micro.svg?branch=master)](https://travis-ci.org/DestructHub/xi-micro)
 
-`xi-tui` is a terminal frontend for [xi](https://github.com/google/xi-editor/).
+`xi-micro` is a terminal frontend for [xi](https://github.com/google/xi-editor/).
 
 It is experimental and under development, so don't expect anything magical (yet!).
+
+This is a fork which don't have any intention to merge on the original.
 
 ## Installation
 
@@ -24,11 +26,22 @@ cargo install
 # You need to add ~/.cargo/bin to your PATH
 # (this is where `cargo install` places binaries).
 # In your .bashrc (or equivalent), add `export PATH=$PATH:~/.cargo/bin`
+
+git clone https://github.com/google/xi-editor
+cd xi-editor/rust
+cargo install
+
+git clone https://github.com/DestructHub/xi-micro
+cd xi-micro
+cargo install
 ```
 
 Then you can clone this repository and run the frontend with
 `cargo run --release -- <your_file>`.
 `your_file` can be an existing file or any dummy name.
+
+
+You should call as `xmi` on terminal.
 
 ## Logging
 

@@ -1,6 +1,8 @@
 [package]
-authors = ["Corentin Henry <corentinhenry@gmail.com>"]
-name = "xi-tui"
+authors = ["Corentin Henry <corentinhenry@gmail.com>",
+           "Manoel Vilela <manoel_vilela@engineer.com>",
+           "Leonardo Neumann <leonardohn@null.net>"]
+name = "xmi"
 version = "0.1.0"
 
 [dependencies]
