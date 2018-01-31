@@ -27,10 +27,6 @@ cargo install
 # (this is where `cargo install` places binaries).
 # In your .bashrc (or equivalent), add `export PATH=$PATH:~/.cargo/bin`
 
-git clone https://github.com/google/xi-editor
-cd xi-editor/rust
-cargo install
-
 git clone https://github.com/DestructHub/xi-micro
 cd xi-micro
 cargo install
