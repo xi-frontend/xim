@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/DestructHub/xi-micro.svg?branch=master)](https://travis-ci.org/DestructHub/xi-micro)
 
-`xi-micro` is a terminal frontend for [xi](https://github.com/google/xi-editor/).
+`xi-micro` is a terminal frontend for [xi editor](https://github.com/google/xi-editor/).
 
 It is experimental and under development, so don't expect anything magical (yet!).
 
@@ -10,34 +10,24 @@ This is a fork which don't have any intention to merge on the original.
 
 ## Installation
 
-The frontend assumes that you have installed the
-[core editor](https://github.com/google/xi-editor)
-and is available in your PATH. The following should suffice:
+The frontend assumes that you have installed the [core editor](https://github.com/google/xi-editor) and is available in your PATH. The following should suffice:
 
 ```bash
+# If you want syntax highlighting, you need to download and install the syntect plugin
 git clone https://github.com/google/xi-editor
-cd xi-editor/rust
+cd xi-editor/rust/syntect-plugin
 cargo install
 
-# if you want syntax highlighting, you need to install the syntect plugin:
-cd syntect-plugin
-cargo install
+# You need to have ~/.cargo/bin into your PATH in order to run any Cargo installation binary
+# In case you don´t have it, add `export PATH=$PATH:~/.cargo/bin` to your .bashrc (or equivalent)
 
-# You need to add ~/.cargo/bin to your PATH
-# (this is where `cargo install` places binaries).
-# In your .bashrc (or equivalent), add `export PATH=$PATH:~/.cargo/bin`
-
+# To install xi-micro, just clone the repository and install it by Cargo
 git clone https://github.com/DestructHub/xi-micro
 cd xi-micro
 cargo install
 ```
 
-Then you can clone this repository and run the frontend with
-`cargo run --release -- <your_file>`.
-`your_file` can be an existing file or any dummy name.
-
-
-You should call as `xmi` on terminal.
+You can then run the editor using `xmi <filename>` on terminal, or, if you want to run directly from sourcecode, use `cargo run --release -- <filename>`.
 
 ## Logging
 
