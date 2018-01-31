@@ -31,12 +31,13 @@ You can then run the editor using `xmi <filename>` on terminal, or, if you want 
 
 ## Logging
 
-For debugging, it can be useful to have logs.
-You can specify a location for log files `xi-tui` with `-l <logfile>`.
-Two files will be written:
+For debugging, it can be useful to have logs.  You can specify a
+location for log files `xmi` with `-l <logfile>`.  Two files will
+be written:
 
-- `<logfile>`: all the `xi-tui` logs
-- `<logfile>.rpc`: the RPC messages exchanged between the core and the frontend
+- `<logfile>`: all the `xmi` logs
+- `<logfile>.rpc`: the RPC messages exchanged between the core and the
+  frontend
 
 ## Screenshots
 
@@ -55,9 +56,9 @@ For now, there are only two shortcuts:
 
 ### Tabs
 
-We assume tabs (`\t`) are 4 columns large. It that is not the case in your
-terminal, the cursor position will be inaccurate. On linux, to set the `\t`
-width to four spaces, do:
+We assume tabs (`\t`) are 4 columns large. It that is not the case in
+your terminal, the cursor position will be inaccurate. On linux, to
+set the `\t` width to four spaces, do:
 
 ```
 tabs -4
@@ -65,7 +66,9 @@ tabs -4
 
 ### Colors
 
-If you have the `syntect` plugin installed, colors will be enabled by default, with two caveats:
+If you have the `syntect` plugin installed, colors will be enabled by
+default, with two caveats:
 
-- you must have true colors enabled. Otherwise, some portions of text won't be displayed
+- you must have true colors enabled. Otherwise, some portions of text
+  won't be displayed
 - the default theme is for dark backgrounds
