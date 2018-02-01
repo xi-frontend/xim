@@ -17,7 +17,7 @@ extern crate termion;
 extern crate tokio_core;
 extern crate xrl;
 
-mod xmi;
+mod xim;
 mod errors;
 mod terminal;
 mod view;
@@ -30,7 +30,7 @@ use tokio_core::reactor::Core;
 use xrl::spawn;
 
 use errors::*;
-use xmi::{Xmi, XmiServiceBuilder};
+use xim::{Xim, XimServiceBuilder};
 
 fn configure_logs(logfile: &str) {
     let tui = FileAppender::builder().build(logfile).unwrap();
@@ -101,7 +101,7 @@ fn run() -> Result<()> {
     let mut core = Core::new().chain_err(|| "failed to create event loop")?;
 
     info!("starting xi-core");
-    let (tui_builder, core_events_rx) = XmiServiceBuilder::new();
+    let (tui_builder, core_events_rx) = XimServiceBuilder::new();
     let (client, core_stderr) = spawn(
         matches.value_of("core").unwrap_or("xi-core"),
         tui_builder,
@@ -120,7 +120,7 @@ fn run() -> Result<()> {
 
     info!("initializing the TUI");
     let mut tui =
-        Xmi::new(core.handle(), client, core_events_rx).chain_err(|| "failed initialize the TUI")?;
+        Xim::new(core.handle(), client, core_events_rx).chain_err(|| "failed initialize the TUI")?;
     tui.open(matches.value_of("file").unwrap_or("").to_string());
     tui.set_theme("base16-eighties.dark");
 

@@ -27,15 +27,15 @@ cd xi-micro
 cargo install
 ```
 
-You can then run the editor using `xmi <filename>` on terminal, or, if you want to run directly from sourcecode, use `cargo run --release -- <filename>`.
+You can then run the editor using `xim <filename>` on terminal, or, if you want to run directly from sourcecode, use `cargo run --release -- <filename>`.
 
 ## Logging
 
 For debugging, it can be useful to have logs.  You can specify a
-location for log files `xmi` with `-l <logfile>`.  Two files will
+location for log files `xim` with `-l <logfile>`.  Two files will
 be written:
 
-- `<logfile>`: all the `xmi` logs
+- `<logfile>`: all the `xim` logs
 - `<logfile>.rpc`: the RPC messages exchanged between the core and the
   frontend
 
