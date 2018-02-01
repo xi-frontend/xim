@@ -1,7 +1,3 @@
-#![cfg_attr(feature = "clippy", feature(plugin))]
-#![cfg_attr(feature = "clippy", plugin(clippy))]
-#![cfg_attr(feature = "clippy", deny(clippy))]
-
 #[macro_use]
 extern crate clap;
 
@@ -16,8 +12,9 @@ extern crate futures;
 extern crate termion;
 extern crate tokio_core;
 extern crate xrl;
+extern crate xdg;
 
-mod xmi;
+mod xim;
 mod errors;
 mod terminal;
 mod view;
@@ -30,25 +27,25 @@ use tokio_core::reactor::Core;
 use xrl::spawn;
 
 use errors::*;
-use xmi::{Xmi, XmiServiceBuilder};
+use xim::{Xim, XimServiceBuilder};
 
 fn configure_logs(logfile: &str) {
-    let tui = FileAppender::builder().build(logfile).unwrap();
+    let xim = FileAppender::builder().build(logfile).unwrap();
     let rpc = FileAppender::builder()
         .build(&format!("{}.rpc", logfile))
         .unwrap();
     let config = Config::builder()
-        .appender(Appender::builder().build("tui", Box::new(tui)))
+        .appender(Appender::builder().build("xim", Box::new(xim)))
         .appender(Appender::builder().build("rpc", Box::new(rpc)))
         .logger(
             Logger::builder()
-                .appender("tui")
+                .appender("xim")
                 .additive(false)
-                .build("xi_tui", LogLevelFilter::Debug),
+                .build("xi_micro", LogLevelFilter::Debug),
         )
         .logger(
             Logger::builder()
-                .appender("tui")
+                .appender("xim")
                 .additive(false)
                 .build("xrl", LogLevelFilter::Info),
         )
@@ -58,7 +55,7 @@ fn configure_logs(logfile: &str) {
                 .additive(false)
                 .build("xrl::protocol::codec", LogLevelFilter::Trace),
         )
-        .build(Root::builder().appender("tui").build(LogLevelFilter::Info))
+        .build(Root::builder().appender("xim").build(LogLevelFilter::Info))
         .unwrap();
     let _ = log4rs::init_config(config).unwrap();
 }
@@ -101,10 +98,10 @@ fn run() -> Result<()> {
     let mut core = Core::new().chain_err(|| "failed to create event loop")?;
 
     info!("starting xi-core");
-    let (tui_builder, core_events_rx) = XmiServiceBuilder::new();
+    let (xim_builder, core_events_rx) = XimServiceBuilder::new();
     let (client, core_stderr) = spawn(
         matches.value_of("core").unwrap_or("xi-core"),
-        tui_builder,
+        xim_builder,
         &core.handle(),
     );
 
@@ -118,14 +115,14 @@ fn run() -> Result<()> {
 
     info!("starting logging xi-core errors");
 
-    info!("initializing the TUI");
-    let mut tui =
-        Xmi::new(core.handle(), client, core_events_rx).chain_err(|| "failed initialize the TUI")?;
-    tui.open(matches.value_of("file").unwrap_or("").to_string());
-    tui.set_theme("base16-eighties.dark");
+    info!("initializing the xim");
+    let mut xim =
+        Xim::new(core.handle(), client, core_events_rx).chain_err(|| "failed initialize the xim")?;
+    xim.open(matches.value_of("file").unwrap_or("").to_string());
+    xim.set_theme("base16-eighties.dark");
 
-    info!("spawning the TUI on the event loop");
-    core.run(tui)
-        .chain_err(|| "an error occured while running the TUI")?;
+    info!("spawning the xim on the event loop");
+    core.run(xim)
+        .chain_err(|| "an error occured while running the xim")?;
     Ok(())
 }

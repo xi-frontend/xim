@@ -6,17 +6,25 @@ use futures::sync::mpsc::{unbounded, UnboundedReceiver, UnboundedSender};
 
 use termion::event::{Event, Key};
 use tokio_core::reactor::Handle;
-use xrl::{Client, ClientResult, Frontend, FrontendBuilder, ScrollTo, ServerResult, Style, Update};
+use xrl::{
+    Client, ClientResult, Frontend,
+    FrontendBuilder, ScrollTo, ServerResult,
+    Style, Update, AvailablePlugins,
+    PluginStarted, PluginStoped, UpdateCmds,
+    ConfigChanged, ThemeChanged, ViewId
+};
+
+use xdg::BaseDirectories;
 
 use errors::*;
 use terminal::{Terminal, TerminalEvent};
 use view::{View, ViewClient};
 
-pub struct Xmi {
-    pub pending_open_requests: Vec<ClientResult<(String, View)>>,
+pub struct Xim {
+    pub pending_open_requests: Vec<ClientResult<(ViewId, View)>>,
     pub delayed_events: Vec<CoreEvent>,
-    pub views: HashMap<String, View>,
-    pub current_view: String,
+    pub views: HashMap<ViewId, View>,
+    pub current_view: Option<ViewId>,
     pub events: UnboundedReceiver<CoreEvent>,
     pub handle: Handle,
     pub client: Client,
@@ -26,16 +34,20 @@ pub struct Xmi {
     pub styles: HashMap<u64, Style>,
 }
 
-impl Xmi {
+impl Xim {
     pub fn new(
         handle: Handle,
-        client: Client,
+        mut client: Client,
         events: UnboundedReceiver<CoreEvent>,
     ) -> Result<Self> {
         let mut styles = HashMap::new();
         styles.insert(0, Default::default());
-
-        Ok(Xmi {
+        if let Ok(dirs) = BaseDirectories::with_prefix("xi") {
+            if let Some(conf_dir) = dirs.get_config_home().to_str() {
+                handle.spawn(client.client_started(Some(conf_dir)).map_err(|_|()));
+            }
+        }
+        Ok(Xim {
             events: events,
             delayed_events: Vec::new(),
             pending_open_requests: Vec::new(),
@@ -44,7 +56,7 @@ impl Xmi {
             term_size: (0, 0),
             views: HashMap::new(),
             styles: styles,
-            current_view: "".into(),
+            current_view: None,
             client: client,
             shutdown: false,
         })
@@ -59,7 +71,7 @@ impl Xmi {
     }
 
     fn handle_update(&mut self, update: Update) {
-        let Xmi {
+        let Xim {
             ref mut views,
             ref mut delayed_events,
             ..
@@ -71,7 +83,7 @@ impl Xmi {
     }
 
     fn handle_scroll_to(&mut self, scroll_to: ScrollTo) {
-        let Xmi {
+        let Xim {
             ref mut views,
             ref mut delayed_events,
             ..
@@ -87,17 +99,19 @@ impl Xmi {
     }
 
     fn handle_resize(&mut self, size: (u16, u16)) {
-        let Xmi {
+        let Xim {
             ref mut views,
             ref current_view,
             ..
         } = *self;
         info!("setting new terminal size");
         self.term_size = size;
-        if let Some(view) = views.get_mut(current_view) {
-            view.resize(size.1);
-        } else {
-            warn!("view {} not found", current_view);
+        if let Some(current_view) = *current_view {
+            if let Some(view) = views.get_mut(&current_view) {
+                view.resize(size.1);
+            } else {
+                warn!("view {:?} not found", current_view);
+            }
         }
     }
 
@@ -120,8 +134,12 @@ impl Xmi {
     fn handle_input(&mut self, event: Event) {
         if Event::Key(Key::Ctrl('c')) == event {
             self.exit()
-        } else if let Some(view) = self.views.get_mut(&self.current_view) {
-            view.handle_input(event)
+        } else {
+            if let Some(current_view) = self.current_view {
+                if let Some(view) = self.views.get_mut(&current_view) {
+                    view.handle_input(event);
+                }
+            }
         }
     }
 
@@ -137,7 +155,7 @@ impl Xmi {
 
         info!("process pending open requests");
 
-        let Xmi {
+        let Xim {
             ref mut pending_open_requests,
             ref mut views,
             ref mut current_view,
@@ -153,7 +171,7 @@ impl Xmi {
                     done.push(idx);
                     view.resize(term_size.1);
                     views.insert(id.clone(), view);
-                    *current_view = id;
+                    *current_view = Some(id);
                 }
                 Ok(Async::NotReady) => continue,
                 Err(e) => panic!("\"open\" task failed: {}", e),
@@ -223,17 +241,19 @@ impl Xmi {
     }
 
     fn render(&mut self) -> Result<()> {
-        let Xmi {
+        let Xim {
             ref mut views,
             ref mut term,
             ref current_view,
             ref styles,
             ..
         } = *self;
-        if let Some(view) = views.get_mut(current_view) {
-            view.render(term.stdout(), styles)?;
-            if let Err(e) = term.stdout().flush() {
-                error!("failed to flush stdout: {}", e);
+        if let Some(current_view) = *current_view {
+            if let Some(view) = views.get_mut(&current_view) {
+                view.render(term.stdout(), styles)?;
+                if let Err(e) = term.stdout().flush() {
+                    error!("failed to flush stdout: {}", e);
+                }
             }
         }
         Ok(())
@@ -247,7 +267,7 @@ pub enum CoreEvent {
     SetStyle(Style),
 }
 
-impl Future for Xmi {
+impl Future for Xim {
     type Item = ();
     type Error = io::Error;
 
@@ -269,19 +289,19 @@ impl Future for Xmi {
     }
 }
 
-pub struct XmiService(UnboundedSender<CoreEvent>);
+pub struct XimService(UnboundedSender<CoreEvent>);
 
-impl XmiService {
+impl XimService {
     fn send_core_event(&mut self, event: CoreEvent) -> ServerResult<()> {
         if let Err(e) = self.0.start_send(event) {
-            let e = format!("failed to send core event to TUI: {}", e);
+            let e = format!("failed to send core event to XIM: {}", e);
             error!("{}", e);
             return Box::new(future::err(e.into()));
         }
         match self.0.poll_complete() {
             Ok(_) => Box::new(future::ok(())),
             Err(e) => {
-                let e = format!("failed to send core event to TUI: {}", e);
+                let e = format!("failed to send core event to XIM: {}", e);
                 Box::new(future::err(e.into()))
             }
         }
@@ -289,7 +309,7 @@ impl XmiService {
 }
 
 
-impl Frontend for XmiService {
+impl Frontend for XimService {
     fn update(&mut self, update: Update) -> ServerResult<()> {
         self.send_core_event(CoreEvent::Update(update))
     }
@@ -301,19 +321,43 @@ impl Frontend for XmiService {
     fn def_style(&mut self, style: Style) -> ServerResult<()> {
         self.send_core_event(CoreEvent::SetStyle(style))
     }
-}
-
-pub struct XmiServiceBuilder(UnboundedSender<CoreEvent>);
-
-impl XmiServiceBuilder {
-    pub fn new() -> (Self, UnboundedReceiver<CoreEvent>) {
-        let (tx, rx) = unbounded();
-        (XmiServiceBuilder(tx), rx)
+    fn available_plugins(&mut self, plugins: AvailablePlugins) -> ServerResult<()> {
+        info!("Received available_plugins: {:?}",plugins);
+        Box::new(future::ok(()))
+    }
+    fn update_cmds(&mut self, cmds: UpdateCmds) -> ServerResult<()> {
+        info!("Received update_cmds: {:?}",cmds);
+        Box::new(future::ok(()))
+    }
+    fn plugin_started(&mut self, plugin: PluginStarted) -> ServerResult<()> {
+        info!("Received plugin_started: {:?}",plugin);
+        Box::new(future::ok(()))
+    }
+    fn plugin_stoped(&mut self, plugin: PluginStoped) -> ServerResult<()> {
+        info!("Received plugin_stoped: {:?}",plugin);
+        Box::new(future::ok(()))
+    }
+    fn theme_changed(&mut self, theme: ThemeChanged) -> ServerResult<()> {
+        info!("Received theme_changed: {:?}",theme);
+        Box::new(future::ok(()))
+    }
+    fn config_changed(&mut self, cfg: ConfigChanged) -> ServerResult<()> {
+        info!("Received config_changed: {:?}",cfg);
+        Box::new(future::ok(()))
     }
 }
 
-impl FrontendBuilder<XmiService> for XmiServiceBuilder {
-    fn build(self, _client: Client) -> XmiService {
-        XmiService(self.0)
+pub struct XimServiceBuilder(UnboundedSender<CoreEvent>);
+
+impl XimServiceBuilder {
+    pub fn new() -> (Self, UnboundedReceiver<CoreEvent>) {
+        let (tx, rx) = unbounded();
+        (XimServiceBuilder(tx), rx)
+    }
+}
+
+impl FrontendBuilder<XimService> for XimServiceBuilder {
+    fn build(self, _client: Client) -> XimService {
+        XimService(self.0)
     }
 }
