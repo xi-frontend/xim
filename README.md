@@ -43,9 +43,12 @@ be written:
 
 ## Screenshots
 
+![the xim source](.github/rust.jpg)
+
 ![a python file](.github/python.png)
 
 ![the README file](.github/README.png)
+
 
 ## Shortcuts
 
