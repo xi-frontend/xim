@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/DestructHub/xim.svg?branch=master)](https://travis-ci.org/DestructHub/xim)
 
-`xim` is a terminal frontend for [xi editor](https://github.com/google/xi-editor/).
+`xim` is a minimal terminal frontend for [xi editor](https://github.com/google/xi-editor).
 
 It is experimental and under development, so don't expect anything magical (yet!).
 
@@ -10,29 +10,32 @@ This is a fork which don't have any intention to merge on the original.
 
 ## Installation
 
-The frontend assumes that you have installed the [core editor](https://github.com/google/xi-editor) and is available in your PATH. The following should suffice:
+Assuming that you have installed [xi editor core](https://github.com/google/xi-editor) and you have `~/.cargo/bin` into your `PATH`, the following should suffice:
 
 ```bash
-# If you want syntax highlighting, you need to download and install the syntect plugin
+# If you want syntax highlighting, download and install the syntect plugin
 git clone https://github.com/google/xi-editor
 cd xi-editor/rust/syntect-plugin
-cargo install
+make
+make install
 
-# You need to have ~/.cargo/bin into your PATH in order to run any Cargo installation binary
-# In case you don´t have it, add `export PATH=$PATH:~/.cargo/bin` to your .bashrc (or equivalent)
-
-# To install xim, just clone the repository and install it by Cargo
+# Clone this repository and navigate to the project root folder
 git clone https://github.com/DestructHub/xim
 cd xim
+
+# If you want to install it on your machine
 cargo install
+
+# If you just want to run it without installing
+cargo run --release -- <filename>
 ```
 
-You can then run the editor using `xim <filename>` on terminal, or, if you want to run directly from sourcecode, use `cargo run --release -- <filename>`.
+To run the editor after installing, use `xim <filename>`.
 
 ## Logging
 
-For debugging, it can be useful to have logs.  You can specify a
-location for log files `xim` with `-l <logfile>`.  Two files will
+For debugging, it can be useful to have logs. You can specify a
+location for log files `xim` with `-l <logfile>`. Two files will
 be written:
 
 - `<logfile>`: all the `xim` logs
