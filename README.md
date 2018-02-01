@@ -1,8 +1,8 @@
-# xi-micro
+# xim
 
-[![Build Status](https://travis-ci.org/DestructHub/xi-micro.svg?branch=master)](https://travis-ci.org/DestructHub/xi-micro)
+[![Build Status](https://travis-ci.org/DestructHub/xim.svg?branch=master)](https://travis-ci.org/DestructHub/xim)
 
-`xi-micro` is a terminal frontend for [xi editor](https://github.com/google/xi-editor/).
+`xim` is a terminal frontend for [xi editor](https://github.com/google/xi-editor/).
 
 It is experimental and under development, so don't expect anything magical (yet!).
 
@@ -21,9 +21,9 @@ cargo install
 # You need to have ~/.cargo/bin into your PATH in order to run any Cargo installation binary
 # In case you don´t have it, add `export PATH=$PATH:~/.cargo/bin` to your .bashrc (or equivalent)
 
-# To install xi-micro, just clone the repository and install it by Cargo
-git clone https://github.com/DestructHub/xi-micro
-cd xi-micro
+# To install xim, just clone the repository and install it by Cargo
+git clone https://github.com/DestructHub/xim
+cd xim
 cargo install
 ```
 
