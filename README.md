@@ -16,7 +16,6 @@ Assuming that you have installed [xi editor core](https://github.com/google/xi-e
 # If you want syntax highlighting, download and install the syntect plugin
 git clone https://github.com/google/xi-editor
 cd xi-editor/rust/syntect-plugin
-make
 make install
 
 # Clone this repository and navigate to the project root folder
