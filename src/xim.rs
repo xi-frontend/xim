@@ -33,7 +33,7 @@ pub struct Xim {
     pub shutdown: bool,
     pub styles: HashMap<u64, Style>,
 }
-
+	
 impl Xim {
     pub fn new(
         handle: Handle,
@@ -132,12 +132,30 @@ impl Xim {
     }
 
     fn handle_input(&mut self, event: Event) {
-        if Event::Key(Key::Ctrl('q')) == event {
-            self.exit()
-        } else {
-            if let Some(current_view) = self.current_view {
-                if let Some(view) = self.views.get_mut(&current_view) {
-                    view.handle_input(event);
+        match event {
+            Event::Key(Key::Ctrl(k)) => {
+                match k {
+                    'q' => self.exit(),
+                    _ => ()
+                }
+            },
+            Event::Key(Key::F(k)) => {
+                match k {
+                    2 => self.set_theme("base16-eighties.dark"),
+                    3 => self.set_theme("base16-mocha.dark"),
+                    4 => self.set_theme("base16-ocean.dark"),
+                    5 => self.set_theme("base16-ocean.light"),
+                    6 => self.set_theme("Solarized (dark)"),
+                    7 => self.set_theme("Solarized (light)"),
+                    8 => self.set_theme("InspiredGitHub"),
+                    _ => ()
+                }
+            },
+            _ => {
+                if let Some(current_view) = self.current_view {
+                    if let Some(view) = self.views.get_mut(&current_view) {
+                        view.handle_input(event);
+                    }
                 }
             }
         }
