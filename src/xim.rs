@@ -141,13 +141,13 @@ impl Xim {
             },
             Event::Key(Key::F(k)) => {
                 match k {
-                    2 => self.set_theme("base16-eighties.dark"),
-                    3 => self.set_theme("base16-mocha.dark"),
-                    4 => self.set_theme("base16-ocean.dark"),
-                    5 => self.set_theme("base16-ocean.light"),
-                    6 => self.set_theme("Solarized (dark)"),
-                    7 => self.set_theme("Solarized (light)"),
-                    8 => self.set_theme("InspiredGitHub"),
+                    4 => self.set_theme("base16-eighties.dark"),
+                    5 => self.set_theme("base16-mocha.dark"),
+                    6 => self.set_theme("base16-ocean.dark"),
+                    7 => self.set_theme("base16-ocean.light"),
+                    8 => self.set_theme("Solarized (dark)"),
+                    9 => self.set_theme("Solarized (light)"),
+                    10 => self.set_theme("InspiredGitHub"),
                     _ => ()
                 }
             },
