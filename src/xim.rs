@@ -132,7 +132,7 @@ impl Xim {
     }
 
     fn handle_input(&mut self, event: Event) {
-        if Event::Key(Key::Ctrl('c')) == event {
+        if Event::Key(Key::Ctrl('q')) == event {
             self.exit()
         } else {
             if let Some(current_view) = self.current_view {

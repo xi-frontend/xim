@@ -44,7 +44,7 @@ To enable logging, use the parameter `-l <logfile>`. Two files will be written:
 ## Shortcuts
 
 - `^w` Save
-- `^c` Exit
+- `^q` Quit
 
 ## Caveats
 
