@@ -133,28 +133,18 @@ impl Xim {
 
     fn handle_input(&mut self, event: Event) {
         match event {
-            Event::Key(Key::Ctrl(k)) => {
-                match k {
-                    'q' => self.exit(),
-                    _ => ()
-                }
-            },
-            Event::Key(Key::F(k)) => {
-                match k {
-                    4 => self.set_theme("base16-eighties.dark"),
-                    5 => self.set_theme("base16-mocha.dark"),
-                    6 => self.set_theme("base16-ocean.dark"),
-                    7 => self.set_theme("base16-ocean.light"),
-                    8 => self.set_theme("Solarized (dark)"),
-                    9 => self.set_theme("Solarized (light)"),
-                    10 => self.set_theme("InspiredGitHub"),
-                    _ => ()
-                }
-            },
-            _ => {
+            Event::Key(Key::Ctrl('q')) => self.exit(),
+            Event::Key(Key::F(4)) => self.set_theme("base16-eighties.dark"),
+            Event::Key(Key::F(5)) => self.set_theme("base16-mocha.dark"),
+            Event::Key(Key::F(6)) => self.set_theme("base16-ocean.dark"),
+            Event::Key(Key::F(7)) => self.set_theme("base16-ocean.light"),
+            Event::Key(Key::F(8)) => self.set_theme("Solarized (dark)"),
+            Event::Key(Key::F(9)) => self.set_theme("Solarized (light)"),
+            Event::Key(Key::F(10)) => self.set_theme("InspiredGitHub"),
+            k => {
                 if let Some(current_view) = self.current_view {
                     if let Some(view) = self.views.get_mut(&current_view) {
-                        view.handle_input(event);
+                        view.handle_input(k);
                     }
                 }
             }
