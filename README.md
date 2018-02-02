@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/DestructHub/xim.svg?branch=master)](https://travis-ci.org/DestructHub/xim)
 
+![the xim source](.github/xim.png)
+
 `xim` is a minimal terminal frontend for [xi editor](https://github.com/google/xi-editor).
 
 It is experimental and under development, so don't expect anything magical (yet!).
@@ -38,9 +40,6 @@ To enable logging, use the parameter `-l <logfile>`. Two files will be written:
 - `<logfile>`: `xim` log
 - `<logfile>.rpc`: `rpc` messages log
 
-## Screenshots
-
-![the xim source](.github/xim.png)
 
 ## Shortcuts
 
