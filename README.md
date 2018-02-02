@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/DestructHub/xim.svg?branch=master)](https://travis-ci.org/DestructHub/xim)
 
+![the xim source](.github/xim.png)
+
 `xim` is a minimal terminal frontend for [xi editor](https://github.com/google/xi-editor).
 
 It is experimental and under development, so don't expect anything magical (yet!).
@@ -33,29 +35,16 @@ To run the editor after installing, use `xim <filename>`.
 
 ## Logging
 
-For debugging, it can be useful to have logs. You can specify a
-location for log files `xim` with `-l <logfile>`. Two files will
-be written:
+To enable logging, use the parameter `-l <logfile>`. Two files will be written:
 
-- `<logfile>`: all the `xim` logs
-- `<logfile>.rpc`: the RPC messages exchanged between the core and the
-  frontend
-
-## Screenshots
-
-![the xim source](.github/rust.jpg)
-
-![a python file](.github/python.png)
-
-![the README file](.github/README.png)
+- `<logfile>`: `xim` log
+- `<logfile>.rpc`: `rpc` messages log
 
 
 ## Shortcuts
 
-For now, there are only two shortcuts:
-
-- `^w` saves the current view
-- `^c` exits
+- `^w` Save
+- `^q` Quit
 
 ## Caveats
 
@@ -74,6 +63,6 @@ tabs -4
 If you have the `syntect` plugin installed, colors will be enabled by
 default, with two caveats:
 
-- you must have true colors enabled. Otherwise, some portions of text
-  won't be displayed
-- the default theme is for dark backgrounds
+- You must have true colors enabled. Otherwise, some portions of text
+  won't be displayed.
+- The default color scheme (for now) is `base16-eighties.dark`.

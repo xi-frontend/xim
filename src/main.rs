@@ -20,7 +20,7 @@ mod terminal;
 mod view;
 
 use futures::{Future, Stream};
-use log::LogLevelFilter;
+use log::LevelFilter;
 use log4rs::append::file::FileAppender;
 use log4rs::config::{Appender, Config, Logger, Root};
 use tokio_core::reactor::Core;
@@ -41,21 +41,21 @@ fn configure_logs(logfile: &str) {
             Logger::builder()
                 .appender("xim")
                 .additive(false)
-                .build("xi_micro", LogLevelFilter::Debug),
+                .build("xim", LevelFilter::Debug),
         )
         .logger(
             Logger::builder()
                 .appender("xim")
                 .additive(false)
-                .build("xrl", LogLevelFilter::Info),
+                .build("xrl", LevelFilter::Info),
         )
         .logger(
             Logger::builder()
                 .appender("rpc")
                 .additive(false)
-                .build("xrl::protocol::codec", LogLevelFilter::Trace),
+                .build("xrl::protocol::codec", LevelFilter::Trace),
         )
-        .build(Root::builder().appender("xim").build(LogLevelFilter::Info))
+        .build(Root::builder().appender("xim").build(LevelFilter::Info))
         .unwrap();
     let _ = log4rs::init_config(config).unwrap();
 }
