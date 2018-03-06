@@ -1,6 +1,6 @@
 # xim
 
-[![Build Status](https://travis-ci.org/DestructHub/xim.svg?branch=master)](https://travis-ci.org/DestructHub/xim)
+[![Build Status](https://travis-ci.org/xi-frontend/xim.svg?branch=master)](https://travis-ci.org/xi-frontend/xim)
 
 ![the xim source](.github/xim.png)
 
