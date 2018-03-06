@@ -1,0 +1,39 @@
+#+TITLE: Xim: O editor pras próximas decadas
+#+AUTHOR: Manoel Vilela e Leonardo Neumann
+#+OPTIONS: toc:nil num:nil
+#+STARTUP: beamer
+#+LANGUAGE: bt-br
+#+LATEX_HEADER: \usepackage[]{babel}
+#+LATEX_HEADER: \usetheme{metropolis}
+
+
+* Xim
+
+- Melhor editor que tem (por que foi nós que fizemos, foda-se ai)
+- Não é bloated como vim muito menos como Emacs
+- Design pensado no usuário e não em quem vai ter a paciência de
+  estendê-lo
+- Nenhum editor de terminal é bom o suficiente.
+
+* Por que não outro Emacs?
+
+- Ninguém é louco pra implementar tanta merda de novo.
+- Emacs já tem o emacs pra ser usado
+- Podemos usar features interessante dele, mas não ele todo.
+- Meu deus do céu, *keybinding hell* é algo real!
+
+
+* Por que não outro Vim?
+
+- Modal é uma merda pra editar, não sei como aguentam.
+- VimL simplesmente faz Perl parecer linguagem de criança.
+- Keybindings mnemônicos mas que ninguém sabe deles até saber
+- Não há introspecção do editor
+
+
+* Por que Xim?
+
+- A proposta do Xim é justamente refazer as coisas de uma maneira
+  intuitiva
+- O modo de comandos é a maneira que fará o editor ser eficiente
+- Pensado no minimalismo, features como uma base vetorial ortogonal.
