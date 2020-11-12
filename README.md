@@ -15,20 +15,16 @@ This is a fork which don't have any intention to merge on the original.
 Assuming that you have installed [xi editor core](https://github.com/google/xi-editor) and you have `~/.cargo/bin` into your `PATH`, the following should suffice:
 
 ```bash
-# If you want syntax highlighting, download and install the syntect plugin
-git clone https://github.com/google/xi-editor
-cd xi-editor/rust/syntect-plugin
-make install
+# syntax highlight plugin
+git clone https://github.com/google/xi-editor                                                                                       
+cd xi-editor/rust/syntect-plugin                                                                                                      
+make install                                                                                                                          
+cd $OLDPWD                                                                                                                            
 
-# Clone this repository and navigate to the project root folder
-git clone https://github.com/DestructHub/xim
-cd xim
-
-# If you want to install it on your machine
-cargo install
-
-# If you just want to run it without installing
-cargo run --release -- <filename>
+# xim install
+git clone https://github.com/xi-frontend/xim                                                                                          
+cd xim                                                                          
+cargo install  
 ```
 
 To run the editor after installing, use `xim <filename>`.
